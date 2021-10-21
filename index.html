@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
+    />
+    <title>Microsoft identity platform</title>
+    <link rel="SHORTCUT ICON" href="./favicon.svg" type="image/x-icon" />
+
+    <!-- adding Bootstrap 4 for UI components  -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <a class="navbar-brand" href="/">Microsoft identity platform</a>
+      <div class="btn-group ml-auto dropleft">
+        
+        <button type="button" id="signIn" class="btn btn-secondary">
+          Sign-in
+        </button>
+        <button type="button" id="signOut" class="btn btn-success d-none">
+          Sign-out
+        </button>
+      </div>
+    </nav>
+    <br />
+    <h5 id="title-div" class="card-header text-center">
+      Vanilla JavaScript single-page application secured with MSAL.js
+    </h5>
+    <h5 id="welcome-div" class="card-header text-center d-none"></h5>
+    <br />
+    <h4>Azure Communication Services</h4>
+    <h1>1:1 Video Calling Quickstart</h1>
+    <h1>Calling Quickstart</h1>
+    <input 
+      id="token-input"
+      type="text"
+      placeholder="User access token"
+      style="margin-bottom:1em; width: 200px;"
+    />
+    </div>
+    <button id="token-get" type="button">
+      Get User Access Token
+    </button><br/>
+    <input 
+    id="token-input"
+    type="text"
+    placeholder="ACS access token"
+    style="margin-bottom:1em; width: 200px;"
+  />
+  </div>
+  <button id="token-get-acs" type="button">
+    Get ACS Access Token
+  </button><br/>
+    <input
+      id="callee-id-input"
+      type="text"
+      placeholder="Who would you like to call?"
+      style="margin-bottom: 1em; width: 200px"
+    />
+
+    <div>
+      <button id="call-button" type="button" disabled="true">start call</button>
+      &nbsp;
+      <button id="hang-up-button" type="button" disabled="true">hang up</button>
+      &nbsp;
+      <button id="start-Video" type="button" disabled="true">
+        start video
+      </button>
+      &nbsp;
+      <button id="stop-Video" type="button" disabled="true">stop video</button>
+    </div>
+
+    <div>Local Video</div>
+    <div
+      style="
+        height: 200px;
+        width: 300px;
+        background-color: black;
+        position: relative;
+      "
+    >
+      <div
+        id="myVideo"
+        style="
+          background-color: black;
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+        "
+      ></div>
+    </div>
+    <div>Remote Video</div>
+    <div
+      style="
+        height: 200px;
+        width: 300px;
+        background-color: black;
+        position: relative;
+      "
+    >
+      <div
+        id="remoteVideo"
+        style="
+          background-color: black;
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+        "
+      ></div>
+    </div>
+    <table id="table-div" class="table table-hover d-none">
+      <thead id="table-head-div">
+        <tr>
+          <th>Claim Type</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody id="table-body-div"></tbody>
+    </table>
+    <p id="token-div"></p>
+    <div id="footer" class="footer-copyright text-center py-3 d-none">
+      <p>
+        If you would like to learn more about the claims in your token, copy
+        your <b>id token</b> string in console and head over to the
+        <a href="https://jwt.ms/" target="”_blank”">jwt.ms</a>
+      </p>
+    </div>
+
+    <!-- importing bootstrap.js and supporting js libraries -->
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+      integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+      integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+      crossorigin="anonymous"
+    ></script>
+
+    <script src="./bundle.js"></script>
+  </body>
+</html>
