@@ -54,7 +54,7 @@ export function init() {
   // It's just placed here for convenience.
   const GetAcsAccessToken = async userAccessToken => {
     const identityClient = new CommunicationIdentityClient(
-      "endpoint=https://akcommsvc.communication.azure.com/;accesskey=Ih0HTlftDsJR+O2ADXT+n7722R39L1Py/zXnmnNDYELFmU+x5Te7r/vIo513PGUdeePApGZhLylyZUaTFZo88g=="
+      "endpoint=https://xxx.communication.azure.com/;accesskey=xxx"
     );
 
     let acsAccessToken = await identityClient.getTokenForTeamsUser(
@@ -65,7 +65,7 @@ export function init() {
 
   const GetAcsAccessToken2 = async () => {
     const identityClient = new CommunicationIdentityClient(
-      "endpoint=https://akcommsvc.communication.azure.com/;accesskey=Ih0HTlftDsJR+O2ADXT+n7722R39L1Py/zXnmnNDYELFmU+x5Te7r/vIo513PGUdeePApGZhLylyZUaTFZo88g=="
+      "endpoint=https://xxx.communication.azure.com/;accesskey=xxx"
     );
 
 
