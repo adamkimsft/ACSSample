@@ -11,6 +11,7 @@ import { myMSALObj, username } from "./authPopup";
 let call;
 let callAgent;
 const userToken = document.getElementById("token-input");
+const acsToken = document.getElementById("acs-token-input");
 const calleeInput = document.getElementById("callee-id-input");
 const callButton = document.getElementById("call-button");
 const hangUpButton = document.getElementById("hang-up-button");
@@ -53,26 +54,43 @@ export function init() {
   // It's just placed here for convenience.
   const GetAcsAccessToken = async userAccessToken => {
     const identityClient = new CommunicationIdentityClient(
-      "endpoint=https://xxx.communication.azure.com/;accesskey=xxx"
+      "endpoint=https://akcommsvc.communication.azure.com/;accesskey=Ih0HTlftDsJR+O2ADXT+n7722R39L1Py/zXnmnNDYELFmU+x5Te7r/vIo513PGUdeePApGZhLylyZUaTFZo88g=="
     );
 
-    let acsAccessToken = await identityClient.exchangeTeamsToken(
+    let acsAccessToken = await identityClient.getTokenForTeamsUser(
       userAccessToken
     );
     return acsAccessToken;
   };
 
+  const GetAcsAccessToken2 = async () => {
+    const identityClient = new CommunicationIdentityClient(
+      "endpoint=https://akcommsvc.communication.azure.com/;accesskey=Ih0HTlftDsJR+O2ADXT+n7722R39L1Py/zXnmnNDYELFmU+x5Te7r/vIo513PGUdeePApGZhLylyZUaTFZo88g=="
+    );
+
+
+    let communicationUserId = await identityClient.createUser();
+    const tokenResponse = await identityClient.getToken(communicationUserId, ["voip"]);
+    console.log("tokenResponse = " + tokenResponse)
+    return tokenResponse;
+  }
+
   getTokenACS.addEventListener("click", async () => {
     console.log(userToken.value);
 
-    let acsAccessToken = await GetAcsAccessToken(userToken.value);
-
+    // let acsAccessToken = await GetAcsAccessToken(userToken.value);
+    let acsAccessToken = await GetAcsAccessToken2();
+    acsToken.value = acsAccessToken.token;
+    
     const callClient = new CallClient();
+    console.log("Created CallClient");
+
     const tokenCredential = new AzureCommunicationTokenCredential(
-      acsAccessToken
+      acsAccessToken.token
     );
+    console.log("Created AzureCommunicationTokenCredential");
     callAgent = await callClient.createCallAgent(tokenCredential, {
-      displayName: "xxx",
+      displayName: "adamkim",
     });
 
     deviceManager = await callClient.getDeviceManager();
