@@ -12,6 +12,7 @@ let call;
 let callAgent;
 const userToken = document.getElementById("token-input");
 const acsToken = document.getElementById("acs-token-input");
+const acsId = document.getElementById("acs-id");
 const calleeInput = document.getElementById("callee-id-input");
 const callButton = document.getElementById("call-button");
 const hangUpButton = document.getElementById("hang-up-button");
@@ -57,6 +58,7 @@ export function init() {
       "endpoint=https://xxx.communication.azure.com/;accesskey=xxx"
     );
 
+
     let acsAccessToken = await identityClient.getTokenForTeamsUser(
       userAccessToken
     );
@@ -68,8 +70,8 @@ export function init() {
       "endpoint=https://xxx.communication.azure.com/;accesskey=xxx"
     );
 
-
     let communicationUserId = await identityClient.createUser();
+    acsId.value = communicationUserId;
     const tokenResponse = await identityClient.getToken(communicationUserId, ["voip"]);
     console.log("tokenResponse = " + tokenResponse)
     return tokenResponse;
