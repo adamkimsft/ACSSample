@@ -22,7 +22,6 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
       <a class="navbar-brand" href="/">Microsoft identity platform</a>
       <div class="btn-group ml-auto dropleft">
-        
         <button type="button" id="signIn" class="btn btn-secondary">
           Sign-in
         </button>
@@ -39,34 +38,58 @@
     <br />
     <h4>Azure Communication Services</h4>
     <h1>1:1 Video Calling Quickstart</h1>
-    <h1>Calling Quickstart</h1>
-    <input 
-      id="token-input"
-      type="text"
-      placeholder="User access token"
-      style="margin-bottom:1em; width: 200px;"
-    />
+
+    <div id="configSection">
+      <div style="border: 1px solid gray; padding: 10px;">
+        <h3>Via Teams User ID</h3>
+        <div style="margin-bottom: 1em; width: 800px">
+          <input
+            id="user-token"
+            type="text"
+            disabled
+            placeholder="Teams/AAD Access Token"
+            style="width: 300px"
+          />
+          <button id="token-get" type="button">Login</button>
+          (<a href="https://jwt.io" target="jwt">jwt.io</a>)
+        </div>
+          <button id="token-get-acs-user" type="button">
+            Get ACS Access Token from User Token
+          </button>
+        </div>
+      </div>
+      <br/>
+      <div style="border: 1px solid gray; padding: 10px">
+        <h3>Via ACS ID</h3>
+
+        <div style="margin-bottom: 1em; width: 800px">
+          <input
+            id="comm-id"
+            type="text"
+            disabled
+            placeholder="ACS Communications ID"
+            style="width: 300px"
+          />
+          <button id="commid-get" type="button">Create Comm ID</button>
+        </div>
+          <button id="token-get-acs-comm" type="button">
+            Get ACS Access Token from Comm ID
+          </button>
+        </div>
+      </div>
+      <br/>
+      <div style="margin-bottom: 1em; width: 800px">
+        <input
+          id="acs-token"
+          type="text"
+          placeholder="ACS access token"
+          style="width: 300px"
+        />
+        <button id="call-agent-create" type="button">
+          Create Call Agent
+        </button>
+
     </div>
-    <button id="token-get" type="button">
-      Get User Access Token
-    </button><br/>
-    <input 
-    id="acs-token-input"
-    type="text"
-    placeholder="ACS access token"
-    style="margin-bottom:1em; width: 200px;"
-  />
-  </div>
-  <button id="token-get-acs" type="button">
-    Get ACS Access Token
-  </button><br/>
-  <input 
-  id="acs-id"
-  type="text"
-  readonly
-  placeholder="ACS ID"
-  style="margin-bottom:1em; width: 200px;"
-/><br/>
     <input
       id="callee-id-input"
       type="text"

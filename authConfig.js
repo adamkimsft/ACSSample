@@ -9,8 +9,8 @@ export const msalConfig = {
   auth: {
     clientId: "xxx", // This is the ONLY mandatory field that you need to supply.
     authority: "https://login.microsoftonline.com/xxx", // Defaults to "https://login.microsoftonline.com/common"
-    redirectUri: "http://localhost:8081", // You must register this URI on Azure Portal/App Registration. Defaults to window.location.href
-    postLogoutRedirectUri: "http://localhost:8081", // Simply remove this line if you would like navigate to index page after logout.
+    redirectUri: "http://localhost:8080", // You must register this URI on Azure Portal/App Registration. Defaults to window.location.href
+    postLogoutRedirectUri: "http://localhost:8080", // Simply remove this line if you would like navigate to index page after logout.
     navigateToLoginRequestUrl: false, // If "true", will navigate back to the original request location before processing the auth code response.
   },
   cache: {
@@ -55,6 +55,11 @@ export const loginRequest = {
     "https://auth.msft.communication.azure.com/VoIP",
   ],
 };
+
+// form: endpoint=https://xxx.communication.azure.com/;accesskey=xxx
+export const acsUrl = "xxx";
+
+export const displayName = "xxx";
 
 /**
  * An optional silentRequest object can be used to achieve silent SSO

@@ -6,20 +6,27 @@ import {
 } from "@azure/communication-calling";
 import { AzureCommunicationTokenCredential } from "@azure/communication-common";
 import { CommunicationIdentityClient } from "@azure/communication-identity";
-import { myMSALObj, username } from "./authPopup";
+import { myMSALObj, username, handleResponse } from "./authPopup";
+import { acsUrl, loginRequest, displayName } from "./authConfig";
 
 let call;
 let callAgent;
-const userToken = document.getElementById("token-input");
-const acsToken = document.getElementById("acs-token-input");
-const acsId = document.getElementById("acs-id");
+const userToken = document.getElementById("user-token");
+const getToken = document.getElementById("token-get");
+const getTokenACSUser = document.getElementById("token-get-acs-user");
+
+const commId = document.getElementById("comm-id");
+const getCommId = document.getElementById("commid-get");
+const getTokenACSComm = document.getElementById("token-get-acs-comm");
+
+const acsToken = document.getElementById("acs-token");
+const createCallAgent = document.getElementById("call-agent-create");
+
 const calleeInput = document.getElementById("callee-id-input");
 const callButton = document.getElementById("call-button");
 const hangUpButton = document.getElementById("hang-up-button");
 const stopVideoButton = document.getElementById("stop-Video");
 const startVideoButton = document.getElementById("start-Video");
-const getToken = document.getElementById("token-get");
-const getTokenACS = document.getElementById("token-get-acs");
 
 console.log("getToken is " + getToken);
 let placeCallOptions;
@@ -28,77 +35,87 @@ let localVideoStream;
 let rendererLocal;
 let rendererRemote;
 
+let commIdObj = null;
+
 export function init() {
+  // Get teams/aad/user access token by logging in or getting it from cache if already logged in
   getToken.addEventListener("click", async () => {
-    console.log("Azure Communication Services - Access Tokens Quickstart");
+    console.log("Get access token");
 
-    // let identityResponse = await identityClient.createUser();
-    // console.log(
-    //   `\nCreated an identity with ID: ${identityResponse.communicationUserId}`
-    // );
-
-    // // Issue an access token with the "voip" scope for an identity
-    // let tokenResponse = await identityClient.getToken(identityResponse, ["voip"]);
-
-    myMSALObj
-      .acquireTokenSilent({
+    try {
+      let token = await myMSALObj.acquireTokenSilent({
         account: myMSALObj.getAccountByUsername(username),
         scopes: ["https://auth.msft.communication.azure.com/VoIP"],
-      })
-      .then(async res => {
-        const { accessToken } = res;
-        userToken.value = accessToken;
       });
+      userToken.value = token.accessToken;
+      console.log("Cached: access token is " + userToken.value);
+    } catch (e) {
+      try {
+        let res = await myMSALObj.loginPopup(loginRequest);
+        handleResponse(res);
+        userToken.value = res.accessToken;
+        console.log("Login: access token is " + userToken.value);
+      } catch (error) {
+        console.error(error);
+      }
+    }
   });
 
-  // IMPORTANT - You must perform this function on the server side... someplace secure for production
-  // It's just placed here for convenience.
-  const GetAcsAccessToken = async userAccessToken => {
-    const identityClient = new CommunicationIdentityClient(
-      "endpoint=https://xxx.communication.azure.com/;accesskey=xxx"
-    );
+  // IMPORTANT - You must perform this function on the server side... someplace secure for production to protect the acsUrl
+  // Get an ACS access token for the Teams user access token
+  getTokenACSUser.addEventListener("click", async () => {
+    const identityClient = new CommunicationIdentityClient(acsUrl);
 
+    try {
+      let acsAccessToken = await identityClient.getTokenForTeamsUser(
+        userToken.value
+      );
+      acsToken.value = acsAccessToken;
+    } catch (e) {
+      alert("Error retrieving ACS token: " + e);
+    }
+  });
 
-    let acsAccessToken = await identityClient.getTokenForTeamsUser(
-      userAccessToken
-    );
-    return acsAccessToken;
-  };
+  // IMPORTANT - You must perform this function on the server side... someplace secure for production to protect the acsUrl
+  // Create an ACS communications ID
+  getCommId.addEventListener("click", async () => {
+    const identityClient = new CommunicationIdentityClient(acsUrl);
 
-  const GetAcsAccessToken2 = async () => {
-    const identityClient = new CommunicationIdentityClient(
-      "endpoint=https://xxx.communication.azure.com/;accesskey=xxx"
-    );
+    let commUserId = await identityClient.createUser();
+    commId.value = commUserId.communicationUserId;
+    commIdObj = commUserId;
+  });
 
-    let communicationUserId = await identityClient.createUser();
-    acsId.value = communicationUserId;
-    const tokenResponse = await identityClient.getToken(communicationUserId, ["voip"]);
-    console.log("tokenResponse = " + tokenResponse)
-    return tokenResponse;
-  }
+  // Get an ACS access token for the communiations ID
+  getTokenACSComm.addEventListener("click", async () => {
+    const identityClient = new CommunicationIdentityClient(acsUrl);
 
-  getTokenACS.addEventListener("click", async () => {
-    console.log(userToken.value);
+    const tokenResponse = await identityClient.getToken(commIdObj, ["voip"]);
+    console.log("tokenResponse = " + tokenResponse);
+    acsToken.value = tokenResponse.token;
+  });
 
-    // let acsAccessToken = await GetAcsAccessToken(userToken.value);
-    let acsAccessToken = await GetAcsAccessToken2();
-    acsToken.value = acsAccessToken.token;
-    
+  // Create the call agent
+  createCallAgent.addEventListener("click", async () => {
     const callClient = new CallClient();
     console.log("Created CallClient");
 
     const tokenCredential = new AzureCommunicationTokenCredential(
-      acsAccessToken.token
+      acsToken.value
     );
     console.log("Created AzureCommunicationTokenCredential");
+
     callAgent = await callClient.createCallAgent(tokenCredential, {
-      displayName: "adamkim",
+      displayName: displayName,
     });
+    console.log("Created Call Agent");
 
     deviceManager = await callClient.getDeviceManager();
+    console.log("Got Device Manager");
+
     callButton.disabled = false;
 
-    callAgent.on("incomingCall", async e => {
+    callAgent.on("incomingCall", async (e) => {
       const videoDevices = await deviceManager.getCameras();
       const videoDeviceInfo = videoDevices[0];
       localVideoStream = new LocalVideoStream(videoDeviceInfo);
@@ -116,8 +133,8 @@ export function init() {
       subscribeToRemoteParticipantInCall(addedCall);
     });
 
-    callAgent.on("callsUpdated", e => {
-      e.removed.forEach(removedCall => {
+    callAgent.on("callsUpdated", (e) => {
+      e.removed.forEach((removedCall) => {
         // dispose of video renderers
         rendererLocal.dispose();
         rendererRemote.dispose();
@@ -197,23 +214,23 @@ function handleVideoStream(remoteVideoStream) {
 }
 
 function subscribeToParticipantVideoStreams(remoteParticipant) {
-  remoteParticipant.on("videoStreamsUpdated", e => {
-    e.added.forEach(v => {
+  remoteParticipant.on("videoStreamsUpdated", (e) => {
+    e.added.forEach((v) => {
       handleVideoStream(v);
     });
   });
-  remoteParticipant.videoStreams.forEach(v => {
+  remoteParticipant.videoStreams.forEach((v) => {
     handleVideoStream(v);
   });
 }
 
 function subscribeToRemoteParticipantInCall(callInstance) {
-  callInstance.on("remoteParticipantsUpdated", e => {
-    e.added.forEach(p => {
+  callInstance.on("remoteParticipantsUpdated", (e) => {
+    e.added.forEach((p) => {
       subscribeToParticipantVideoStreams(p);
     });
   });
-  callInstance.remoteParticipants.forEach(p => {
+  callInstance.remoteParticipants.forEach((p) => {
     subscribeToParticipantVideoStreams(p);
   });
 }
