@@ -70,7 +70,7 @@ export function init() {
       let acsAccessToken = await identityClient.getTokenForTeamsUser(
         userToken.value
       );
-      acsToken.value = acsAccessToken;
+      acsToken.value = acsAccessToken.token
     } catch (e) {
       alert("Error retrieving ACS token: " + e);
     }
